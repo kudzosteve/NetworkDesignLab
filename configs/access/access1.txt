@@ -1,0 +1,176 @@
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname Access1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging buffered warnings
+!
+username <USERNAME> privilege 15 secret 8 <PASSWORD_HASH>
+no aaa new-model
+no process cpu extended history
+no process cpu autoprofile hog
+!
+!
+!
+!
+!
+vtp mode transparent
+!
+!
+!
+no ip domain-lookup
+ip domain-name ccna.lab
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+!
+vlan 10,20 
+!
+vlan 40   
+ name SERVERS
+!
+vlan 199
+ name NATIVE
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ description Connected to Dist1
+ switchport trunk allowed vlan 10,20,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+ negotiation auto
+!
+interface GigabitEthernet0/1
+ description Connected to Dist2
+ switchport trunk allowed vlan 10,20,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+ negotiation auto
+!
+interface GigabitEthernet0/2
+ negotiation auto
+ no cdp enable
+!
+interface GigabitEthernet0/3
+ negotiation auto
+ no cdp enable
+!
+interface GigabitEthernet1/0
+ description Vlan10 port
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ switchport port-security mac-address sticky 0050.7966.680a
+ switchport port-security
+ negotiation auto
+ no cdp enable
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
+!
+interface GigabitEthernet1/1
+ description Vlan20 port
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ switchport port-security mac-address sticky 0050.7966.680b
+ switchport port-security
+ negotiation auto
+ no cdp enable
+ spanning-tree portfast edge
+ spanning-tree bpduguard enable
+!
+interface GigabitEthernet1/2
+ negotiation auto
+ no cdp enable
+!
+interface GigabitEthernet1/3
+ negotiation auto
+ no cdp enable
+!
+ip forward-protocol nd
+!
+ip http server
+!
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+no service-routing capabilities-manager
+logging host 10.10.40.10
+!
+!
+!
+!
+control-plane
+!
+banner exec ^CC
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner incoming ^CC
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner login ^CC
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+!
+line con 0
+ exec-timeout 5 0
+ logging synchronous
+ login local
+line aux 0
+line vty 0 4
+ exec-timeout 5 0
+ logging synchronous
+ login local
+ transport input ssh
+!
+!
+end

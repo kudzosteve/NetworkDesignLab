@@ -1,0 +1,217 @@
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname Dist2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging buffered warnings
+!
+username <USERNAME> privilege 15 secret 8 <PASSWORD_HASH>
+no aaa new-model
+no process cpu extended history
+no process cpu autoprofile hog
+!
+!
+!
+!
+!
+vtp mode transparent
+!
+!
+!
+no ip domain-lookup
+ip domain-name ccna.lab
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+spanning-tree vlan 10,20,30,40 priority 28672
+!
+!
+vlan 10,20,30 
+!         
+vlan 40
+ name SERVERS
+!
+vlan 199
+ name NATIVE
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ switchport trunk allowed vlan 10,20,30,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+!
+interface GigabitEthernet0/0
+ description Connected to R2
+ no switchport
+ ip address 172.17.0.6 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf 1 area 0
+ negotiation auto
+!
+interface GigabitEthernet0/1
+ description EtherChannel Port
+ switchport trunk allowed vlan 10,20,30,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+ negotiation auto
+ channel-group 1 mode auto
+!
+interface GigabitEthernet0/2
+ description EtherChannel Port
+ switchport trunk allowed vlan 10,20,30,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+ negotiation auto
+ channel-group 1 mode auto
+!
+interface GigabitEthernet0/3
+ negotiation auto
+ no cdp enable
+!
+interface GigabitEthernet1/0
+ description Connected to Access1
+ switchport trunk allowed vlan 10,20,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+ negotiation auto
+!
+interface GigabitEthernet1/1
+ description Connected to Access2
+ switchport trunk allowed vlan 20,30,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+ negotiation auto
+!
+interface GigabitEthernet1/2
+ description Connected to Access3
+ switchport trunk allowed vlan 10,30,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+ negotiation auto
+!
+interface GigabitEthernet1/3
+ description Connected to Access4
+ switchport trunk allowed vlan 10,20,30,40
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 199
+ switchport mode trunk
+ negotiation auto
+!
+interface Vlan10
+ ip address 10.10.10.2 255.255.255.0
+ ip helper-address 10.10.40.10 
+ standby 10 ip 10.10.10.5
+ standby 10 preempt
+ ip ospf 1 area 0
+!
+interface Vlan20
+ ip address 10.10.20.2 255.255.255.0
+ ip helper-address 10.10.40.10 
+ standby 20 ip 10.10.20.5
+ standby 20 preempt
+ ip ospf 1 area 0
+!
+interface Vlan30
+ ip address 10.10.30.2 255.255.255.0
+ ip helper-address 10.10.40.10 
+ standby 30 ip 10.10.30.5
+ standby 30 preempt
+ ip ospf 1 area 0
+!
+interface Vlan40
+ ip address 10.10.40.2 255.255.255.128
+ standby 40 ip 10.10.40.5
+ standby 40 preempt
+ ip ospf 1 area 0
+!
+router ospf 1
+!
+ip forward-protocol nd
+!
+ip http server
+!
+ip route 0.0.0.0 0.0.0.0 172.17.0.5
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+no service-routing capabilities-manager
+logging host 10.10.40.10
+!
+!
+!
+!
+control-plane
+!
+banner exec ^CC
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner incoming ^CC
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner login ^CC
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+!
+line con 0
+ exec-timeout 5 0
+ logging synchronous
+ login local
+line aux 0
+line vty 0 4
+ exec-timeout 5 0
+ logging synchronous
+ login local
+ transport input ssh
+!
+!
+end
